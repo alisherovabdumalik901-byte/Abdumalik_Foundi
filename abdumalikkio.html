@@ -1,0 +1,2592 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abdumalik_Foundi - Crowdfunding Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0f1a;
+            --bg-secondary: #111827;
+            --fg: #f8fafc;
+            --fg-muted: #94a3b8;
+            --accent: #10b981;
+            --accent-glow: rgba(16, 185, 129, 0.3);
+            --premium: #f59e0b;
+            --premium-glow: rgba(245, 158, 11, 0.3);
+            --card: #1e293b;
+            --card-hover: #334155;
+            --border: #334155;
+            --danger: #ef4444;
+            --success: #22c55e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* Animated Background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .animated-bg::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(16, 185, 129, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(245, 158, 11, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(16, 185, 129, 0.03) 0%, transparent 70%);
+            animation: bgPulse 20s ease-in-out infinite;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(-2%, -2%) scale(1.02); }
+            66% { transform: translate(2%, 2%) scale(0.98); }
+        }
+
+        /* Grid Pattern */
+        .grid-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: 
+                linear-gradient(rgba(16, 185, 129, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(16, 185, 129, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+        }
+
+        /* Floating Particles */
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        .particle:nth-child(odd) {
+            background: var(--premium);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
+            25% { transform: translateY(-100px) translateX(50px); opacity: 0.6; }
+            50% { transform: translateY(-50px) translateX(-30px); opacity: 0.4; }
+            75% { transform: translateY(-150px) translateX(20px); opacity: 0.5; }
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10, 15, 26, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(10, 15, 26, 0.95);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-link {
+            position: relative;
+            color: var(--fg-muted);
+            transition: color 0.3s ease;
+            padding: 0.5rem 1rem;
+        }
+
+        .nav-link:hover {
+            color: var(--fg);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::after {
+            width: 80%;
+        }
+
+        .nav-link.active::after {
+            width: 80%;
+            background: var(--accent);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), #059669);
+            color: white;
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--accent-glow);
+        }
+
+        .btn-premium {
+            background: linear-gradient(135deg, var(--premium), #d97706);
+            color: #1a1a1a;
+            box-shadow: 0 4px 20px var(--premium-glow);
+        }
+
+        .btn-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--premium-glow);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--fg);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--fg-muted);
+        }
+
+        .btn-ghost:hover {
+            background: var(--card);
+            color: var(--fg);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent);
+            box-shadow: 0 20px 60px rgba(16, 185, 129, 0.15);
+        }
+
+        .card-premium {
+            border-color: var(--premium);
+            position: relative;
+        }
+
+        .card-premium::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--premium), #fbbf24, var(--premium));
+        }
+
+        .card-premium:hover {
+            border-color: var(--premium);
+            box-shadow: 0 20px 60px rgba(245, 158, 11, 0.2);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 10px;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), #34d399);
+            border-radius: 10px;
+            transition: width 1s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-premium {
+            background: linear-gradient(90deg, var(--premium), #fbbf24);
+        }
+
+        /* Premium Badge */
+        .premium-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.75rem;
+            background: linear-gradient(135deg, var(--premium), #d97706);
+            color: #1a1a1a;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Category Tags */
+        .category-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.375rem 0.875rem;
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent);
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 20px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .category-tag:hover {
+            background: rgba(16, 185, 129, 0.25);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--card);
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9) translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1) translateY(0);
+        }
+
+        /* Form Inputs */
+        .input-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--fg-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            color: var(--fg);
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px var(--accent-glow);
+        }
+
+        .input::placeholder {
+            color: var(--fg-muted);
+            opacity: 0.5;
+        }
+
+        textarea.input {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        select.input {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1rem;
+            padding-right: 2.5rem;
+        }
+
+        /* Stats Card */
+        .stat-card {
+            background: linear-gradient(135deg, var(--card), var(--bg-secondary));
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+        }
+
+        .stat-number {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            color: var(--fg-muted);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Page Sections */
+        .section {
+            display: none;
+            padding-top: 80px;
+            min-height: 100vh;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: calc(100vh - 80px);
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-title span {
+            background: linear-gradient(135deg, var(--accent), #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--fg-muted);
+            max-width: 600px;
+            margin-bottom: 2rem;
+            line-height: 1.7;
+        }
+
+        /* Filter Tabs */
+        .filter-tabs {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .filter-tab {
+            padding: 0.625rem 1.25rem;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            color: var(--fg-muted);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tab:hover {
+            border-color: var(--accent);
+            color: var(--fg);
+        }
+
+        .filter-tab.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        /* Search Box */
+        .search-box {
+            position: relative;
+            max-width: 400px;
+            margin-bottom: 2rem;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            color: var(--fg);
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px var(--accent-glow);
+        }
+
+        .search-box svg {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--fg-muted);
+        }
+
+        /* Campaign Card */
+        .campaign-card {
+            background: var(--card);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .campaign-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .campaign-card.premium {
+            border-color: var(--premium);
+        }
+
+        .campaign-card.premium:hover {
+            box-shadow: 0 20px 60px rgba(245, 158, 11, 0.15);
+        }
+
+        .campaign-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: linear-gradient(135deg, var(--bg-secondary), var(--card));
+        }
+
+        .campaign-content {
+            padding: 1.5rem;
+        }
+
+        .campaign-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .campaign-description {
+            color: var(--fg-muted);
+            font-size: 0.875rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .campaign-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .campaign-amount {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .campaign-amount.premium {
+            color: var(--premium);
+        }
+
+        .campaign-days {
+            font-size: 0.75rem;
+            color: var(--fg-muted);
+        }
+
+        /* Profile Section */
+        .profile-header {
+            background: linear-gradient(135deg, var(--card), var(--bg-secondary));
+            border-radius: 24px;
+            padding: 2rem;
+            border: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #34d399);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .profile-verified {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.375rem 0.875rem;
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--success);
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 20px;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        /* Dashboard */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Notification Badge */
+        .notification-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 18px;
+            height: 18px;
+            background: var(--danger);
+            border-radius: 50%;
+            font-size: 0.625rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--bg);
+        }
+
+        /* Toast Notification */
+        .toast-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .toast {
+            padding: 1rem 1.5rem;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.success {
+            border-color: var(--success);
+        }
+
+        .toast.error {
+            border-color: var(--danger);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 2rem;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 1rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--fg-muted);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            position: relative;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        .tab:hover {
+            color: var(--fg);
+        }
+
+        .tab.active {
+            color: var(--accent);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--accent);
+        }
+
+        /* Share Buttons */
+        .share-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .share-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1rem;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .share-btn.telegram {
+            background: #0088cc;
+            color: white;
+        }
+
+        .share-btn.instagram {
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            color: white;
+        }
+
+        .share-btn.facebook {
+            background: #1877f2;
+            color: white;
+        }
+
+        .share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Comment Section */
+        .comment {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border);
+        }
+
+        .comment-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .comment-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #34d399);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .comment-date {
+            font-size: 0.75rem;
+            color: var(--fg-muted);
+        }
+
+        .comment-text {
+            color: var(--fg-muted);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        /* File Upload */
+        .file-upload {
+            border: 2px dashed var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--bg-secondary);
+        }
+
+        .file-upload:hover {
+            border-color: var(--accent);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .file-upload.dragover {
+            border-color: var(--accent);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Scroll reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: var(--bg);
+                border-bottom: 1px solid var(--border);
+                padding: 1rem;
+                flex-direction: column;
+            }
+
+            .nav-links.open {
+                display: flex;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .stat-number {
+                font-size: 1.75rem;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+    <div class="grid-pattern"></div>
+    <div class="particles-container" id="particles"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-2 cursor-pointer" onclick="navigateTo('home')">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <rect width="32" height="32" rx="8" fill="url(#logo-gradient)"/>
+                        <path d="M8 16L14 10L20 16L14 22L8 16Z" fill="white" fill-opacity="0.9"/>
+                        <path d="M14 16L20 10L26 16L20 22L14 16Z" fill="white" fill-opacity="0.6"/>
+                        <defs>
+                            <linearGradient id="logo-gradient" x1="0" y1="0" x2="32" y2="32">
+                                <stop stop-color="#10b981"/>
+                                <stop offset="1" stop-color="#059669"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <span class="text-xl font-bold font-['Space_Grotesk']">Abdumalik_Foundi</span>
+                </div>
+
+                <div class="hidden md:flex items-center gap-1 nav-links" id="navLinks">
+                    <button class="nav-link active" data-page="home" onclick="navigateTo('home')">Bosh sahifa</button>
+                    <button class="nav-link" data-page="campaigns" onclick="navigateTo('campaigns')">Kampaniyalar</button>
+                    <button class="nav-link" data-page="create" onclick="navigateTo('create')">Yaratish</button>
+                    <button class="nav-link" data-page="dashboard" onclick="navigateTo('dashboard')">Dashboard</button>
+                </div>
+
+                <div class="hidden md:flex items-center gap-3">
+                    <div class="relative" id="notificationWrapper">
+                        <button class="btn btn-ghost relative" onclick="toggleNotifications()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                            </svg>
+                            <span class="notification-badge" id="notifBadge">3</span>
+                        </button>
+                    </div>
+                    <button class="btn btn-outline" onclick="openModal('loginModal')" id="loginBtn">Kirish</button>
+                    <button class="btn btn-primary" onclick="openModal('registerModal')" id="registerBtn">Royhatdan otish</button>
+                    <div class="hidden items-center gap-3" id="userProfile">
+                        <button class="btn btn-ghost" onclick="navigateTo('profile')">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-green-400 flex items-center justify-center text-sm font-bold" id="userAvatar">U</div>
+                            <span id="userName">User</span>
+                        </button>
+                        <button class="btn btn-ghost" onclick="logout()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <polyline points="16 17 21 12 16 7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <button class="mobile-menu btn btn-ghost" onclick="toggleMobileMenu()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Home Section -->
+        <section class="section active" id="homeSection">
+            <!-- Hero -->
+            <div class="hero">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="grid lg:grid-cols-2 gap-12 items-center">
+                        <div class="hero-content">
+                            <h1 class="hero-title">
+                                Goyangizni <span>haqiqat</span>ga aylantiring
+                            </h1>
+                            <p class="hero-subtitle">
+                                Abdumalik_Foundi - bu sizning ijtimoiy loyihalaringiz, startaplaringiz va g'oyalaringizni moliyalashtirish uchun ishonchli platforma. Birinchi kampaniyangiz bepul!
+                            </p>
+                            <div class="flex flex-wrap gap-4">
+                                <button class="btn btn-primary" onclick="openModal('registerModal')">
+                                    Bepul boshlash
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                        <polyline points="12 5 19 12 12 19"></polyline>
+                                    </svg>
+                                </button>
+                                <button class="btn btn-outline" onclick="navigateTo('campaigns')">
+                                    Kampaniyalarni korish
+                                </button>
+                            </div>
+                        </div>
+                        <div class="hidden lg:block relative">
+                            <div class="absolute -top-20 -right-20 w-96 h-96 bg-gradient-to-br from-emerald-500/20 to-green-400/10 rounded-full blur-3xl"></div>
+                            <div class="relative">
+                                <div class="card p-6 transform rotate-3 hover:rotate-0 transition-transform duration-500">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <span class="category-tag">Ta'lim</span>
+                                        <span class="premium-badge">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                            </svg>
+                                            Premium
+                                        </span>
+                                    </div>
+                                    <h3 class="text-xl font-bold mb-2">Yangi maktab qurish</h3>
+                                    <p class="text-slate-400 text-sm mb-4">Qishloq bolalari uchun zamonaviy ta'lim maskani</p>
+                                    <div class="progress-container mb-3">
+                                        <div class="progress-bar progress-premium" style="width: 75%"></div>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-amber-400 font-bold">$75,000 / $100,000</span>
+                                        <span class="text-slate-400">15 kun qoldi</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                <div class="dashboard-grid">
+                    <div class="stat-card reveal">
+                        <div class="stat-number" data-target="1500">0</div>
+                        <div class="stat-label">Muvaffaqiyatli kampaniya</div>
+                    </div>
+                    <div class="stat-card reveal">
+                        <div class="stat-number" data-target="2500000">0</div>
+                        <div class="stat-label">Yig'ilgan mablag' ($)</div>
+                    </div>
+                    <div class="stat-card reveal">
+                        <div class="stat-number" data-target="50000">0</div>
+                        <div class="stat-label">Foydalanuvchilar</div>
+                    </div>
+                    <div class="stat-card reveal">
+                        <div class="stat-number" data-target="98">0</div>
+                        <div class="stat-label">Muvaffaqiyat darajasi %</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trending Campaigns -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                <div class="flex items-center justify-between mb-8 reveal">
+                    <div>
+                        <h2 class="text-3xl font-bold mb-2">Trending kampaniyalar</h2>
+                        <p class="text-slate-400">Eng ko'p qollab-quvvatlanayotgan loyihalar</p>
+                    </div>
+                    <button class="btn btn-outline hidden sm:flex" onclick="navigateTo('campaigns')">
+                        Hammasini korish
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="trendingCampaigns">
+                    <!-- Campaigns will be rendered here -->
+                </div>
+            </div>
+
+            <!-- Premium Banner -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                <div class="relative overflow-hidden rounded-3xl reveal">
+                    <div class="absolute inset-0 bg-gradient-to-r from-amber-500/20 to-orange-500/10"></div>
+                    <div class="relative p-8 md:p-12 border border-amber-500/30 rounded-3xl">
+                        <div class="grid md:grid-cols-2 gap-8 items-center">
+                            <div>
+                                <div class="premium-badge mb-4">Premium</div>
+                                <h2 class="text-3xl font-bold mb-4">Cheksiz imkoniyatlar</h2>
+                                <p class="text-slate-300 mb-6">Premium obuna bilan cheksiz kampaniyalar yaratish, tahliliy ma'lumotlar va maxsus imtiyozlarga ega bo'ling.</p>
+                                <ul class="space-y-3 mb-6">
+                                    <li class="flex items-center gap-3">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                        Cheksiz kampaniyalar
+                                    </li>
+                                    <li class="flex items-center gap-3">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                        Bosh sahifada korinish
+                                    </li>
+                                    <li class="flex items-center gap-3">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                        Batafsil statistika
+                                    </li>
+                                    <li class="flex items-center gap-3">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                        Premium belgi
+                                    </li>
+                                </ul>
+                                <button class="btn btn-premium" onclick="openModal('premiumModal')">
+                                    Faqat $30 / oy
+                                </button>
+                            </div>
+                            <div class="hidden md:flex justify-center">
+                                <div class="relative">
+                                    <div class="w-64 h-64 rounded-full bg-gradient-to-br from-amber-500/30 to-orange-500/20 flex items-center justify-center">
+                                        <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1">
+                                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Campaigns Section -->
+        <section class="section" id="campaignsSection">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+                <div class="mb-8">
+                    <h1 class="text-4xl font-bold mb-4">Kampaniyalar</h1>
+                    <p class="text-slate-400">Barcha aktiv kampaniyalarni korib chiqing va qollab-quvvatlang</p>
+                </div>
+
+                <!-- Search and Filters -->
+                <div class="flex flex-col md:flex-row gap-4 mb-8">
+                    <div class="search-box flex-1">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" placeholder="Kampaniya qidirish..." id="searchInput" oninput="filterCampaigns()">
+                    </div>
+                    <select class="input w-full md:w-48" id="sortSelect" onchange="filterCampaigns()">
+                        <option value="trending">Trending</option>
+                        <option value="newest">Eng yangi</option>
+                        <option value="funded">Eng ko'p moliyalashtirilgan</option>
+                        <option value="ending">Tez tugaydigan</option>
+                    </select>
+                </div>
+
+                <!-- Category Filters -->
+                <div class="filter-tabs" id="categoryFilters">
+                    <button class="filter-tab active" data-category="all" onclick="filterByCategory('all')">Hammasi</button>
+                    <button class="filter-tab" data-category="education" onclick="filterByCategory('education')">Ta'lim</button>
+                    <button class="filter-tab" data-category="health" onclick="filterByCategory('health')">Salomatlik</button>
+                    <button class="filter-tab" data-category="social" onclick="filterByCategory('social')">Ijtimoiy yordam</button>
+                    <button class="filter-tab" data-category="business" onclick="filterByCategory('business')">Biznes</button>
+                    <button class="filter-tab" data-category="environment" onclick="filterByCategory('environment')">Atrof-muhit</button>
+                </div>
+
+                <!-- Campaigns Grid -->
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="campaignsGrid">
+                    <!-- Campaigns will be rendered here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Create Campaign Section -->
+        <section class="section" id="createSection">
+            <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+                <div class="text-center mb-8">
+                    <h1 class="text-4xl font-bold mb-4">Yangi kampaniya yaratish</h1>
+                    <p class="text-slate-400">Goyangizni dunyoga taniq qiling va qollab-quvvatlang</p>
+                </div>
+
+                <!-- Free vs Premium Info -->
+                <div class="card p-6 mb-8 border-emerald-500/30">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-green-400 flex items-center justify-center flex-shrink-0">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg mb-1">Bepul kampaniya</h3>
+                            <p class="text-slate-400 text-sm">Har bir foydalanuvchi 1 ta bepul kampaniya yaratishi mumkin. Keyingi kampaniyalar uchun Premium obuna kerak.</p>
+                            <div class="mt-3 text-sm">
+                                <span class="text-emerald-400">Sizda:</span>
+                                <span class="font-bold text-white" id="freeCampaignsLeft">1 ta bepul kampaniya</span>
+                                <span class="text-slate-400">qoldi</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Create Form -->
+                <form id="createCampaignForm" class="card p-8">
+                    <div class="input-group">
+                        <label class="input-label">Kampaniya nomi *</label>
+                        <input type="text" class="input" placeholder="Masalan: Yangi maktab qurish" required id="campaignTitle">
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Qisqa ta'rif *</label>
+                        <textarea class="input" placeholder="Kampaniyangiz haqida qisqacha yozing..." required id="campaignDescription"></textarea>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="input-group">
+                            <label class="input-label">Maqsad summasi ($) *</label>
+                            <input type="number" class="input" placeholder="10000" min="100" required id="campaignGoal">
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">Kategoriya *</label>
+                            <select class="input" required id="campaignCategory">
+                                <option value="">Tanlang...</option>
+                                <option value="education">Ta'lim</option>
+                                <option value="health">Salomatlik</option>
+                                <option value="social">Ijtimoiy yordam</option>
+                                <option value="business">Biznes</option>
+                                <option value="environment">Atrof-muhit</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Kampaniya muddati *</label>
+                        <input type="date" class="input" required id="campaignDeadline">
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Rasm yuklash</label>
+                        <div class="file-upload" id="fileUpload">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="mx-auto mb-4 text-slate-500">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21 15 16 10 5 21"></polyline>
+                            </svg>
+                            <p class="text-slate-400 mb-2">Rasmni bu yerga tashlang yoki tanlang</p>
+                            <p class="text-slate-500 text-sm">PNG, JPG (maks. 5MB)</p>
+                            <input type="file" class="hidden" accept="image/*" id="fileInput">
+                        </div>
+                        <div class="hidden mt-4" id="imagePreview">
+                            <img src="" alt="Preview" class="w-full h-48 object-cover rounded-xl">
+                            <button type="button" class="btn btn-ghost mt-2 text-red-400" onclick="removeImage()">Rasmni o'chirish</button>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-4 mt-8">
+                        <button type="submit" class="btn btn-primary flex-1">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            Kampaniya yaratish
+                        </button>
+                        <button type="button" class="btn btn-outline" onclick="navigateTo('campaigns')">Bekor qilish</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Campaign Detail Section -->
+        <section class="section" id="campaignDetailSection">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+                <div id="campaignDetail">
+                    <!-- Campaign detail will be rendered here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Section -->
+        <section class="section" id="dashboardSection">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+                <div class="mb-8">
+                    <h1 class="text-4xl font-bold mb-4">Dashboard</h1>
+                    <p class="text-slate-400">Kampaniyalaringiz statistikasi</p>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="dashboard-grid mb-8">
+                    <div class="stat-card">
+                        <div class="stat-number" id="dashTotalRaised">$0</div>
+                        <div class="stat-label">Jami yig'ilgan</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="dashActiveCampaigns">0</div>
+                        <div class="stat-label">Faol kampaniyalar</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="dashTotalDonors">0</div>
+                        <div class="stat-label">Xayriyachilar</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="dashSuccessRate">0%</div>
+                        <div class="stat-label">Muvaffaqiyat darajasi</div>
+                    </div>
+                </div>
+
+                <!-- My Campaigns -->
+                <div class="card p-6">
+                    <h2 class="text-xl font-bold mb-6">Mening kampaniyalarim</h2>
+                    <div id="myCampaignsList">
+                        <!-- My campaigns will be rendered here -->
+                    </div>
+                    <div class="hidden text-center py-12" id="noCampaignsMessage">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="mx-auto mb-4 text-slate-500">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="12" y1="8" x2="12" y2="16"></line>
+                            <line x1="8" y1="12" x2="16" y2="12"></line>
+                        </svg>
+                        <p class="text-slate-400 mb-4">Hali kampaniyalar yo'q</p>
+                        <button class="btn btn-primary" onclick="navigateTo('create')">Birinchi kampaniyani yaratish</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Profile Section -->
+        <section class="section" id="profileSection">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+                <div class="profile-header">
+                    <div class="flex flex-col md:flex-row items-start md:items-center gap-6">
+                        <div class="profile-avatar" id="profileAvatar">U</div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                <h1 class="text-2xl font-bold" id="profileName">Foydalanuvchi</h1>
+                                <span class="premium-badge hidden" id="profilePremiumBadge">Premium</span>
+                            </div>
+                            <p class="text-slate-400 mb-3" id="profileEmail">user@example.com</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="profile-verified" id="profileVerified">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                    </svg>
+                                    Tasdiqlangan
+                                </span>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline" onclick="openModal('editProfileModal')">Tahrirlash</button>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="tabs">
+                    <button class="tab active" onclick="switchProfileTab('campaigns')">Kampaniyalar</button>
+                    <button class="tab" onclick="switchProfileTab('donations')">Xayriyalar</button>
+                    <button class="tab" onclick="switchProfileTab('settings')">Sozlamalar</button>
+                </div>
+
+                <div id="profileContent">
+                    <!-- Profile content will be rendered here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal">
+            <div class="p-6 border-b border-slate-700">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-bold">Tizimga kirish</h2>
+                    <button class="btn btn-ghost p-2" onclick="closeModal('loginModal')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <form id="loginForm">
+                    <div class="input-group">
+                        <label class="input-label">Email</label>
+                        <input type="email" class="input" placeholder="email@example.com" required id="loginEmail">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Parol</label>
+                        <input type="password" class="input" placeholder="Parolingiz" required id="loginPassword">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-full">Kirish</button>
+                </form>
+                <p class="text-center text-slate-400 text-sm mt-4">
+                    Hisobingiz yo'qmi? 
+                    <button class="text-emerald-400 hover:underline" onclick="switchModal('loginModal', 'registerModal')">Ro'yxatdan o'ting</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal-overlay" id="registerModal">
+        <div class="modal">
+            <div class="p-6 border-b border-slate-700">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-bold">Ro'yxatdan o'tish</h2>
+                    <button class="btn btn-ghost p-2" onclick="closeModal('registerModal')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <form id="registerForm">
+                    <div class="input-group">
+                        <label class="input-label">Ism</label>
+                        <input type="text" class="input" placeholder="Ismingiz" required id="registerName">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Email</label>
+                        <input type="email" class="input" placeholder="email@example.com" required id="registerEmail">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Telefon</label>
+                        <input type="tel" class="input" placeholder="+998 XX XXX XX XX" required id="registerPhone">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Parol</label>
+                        <input type="password" class="input" placeholder="Kamida 6 ta belgi" required id="registerPassword" minlength="6">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-full">Ro'yxatdan o'tish</button>
+                </form>
+                <p class="text-center text-slate-400 text-sm mt-4">
+                    Hisobingiz bormi? 
+                    <button class="text-emerald-400 hover:underline" onclick="switchModal('registerModal', 'loginModal')">Tizimga kiring</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Premium Modal -->
+    <div class="modal-overlay" id="premiumModal">
+        <div class="modal">
+            <div class="p-6 border-b border-slate-700">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-bold">Premium obuna</h2>
+                    <button class="btn btn-ghost p-2" onclick="closeModal('premiumModal')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <div class="text-center mb-6">
+                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center mx-auto mb-4">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="white">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2">$30 / oy</h3>
+                    <p class="text-slate-400">Cheksiz imkoniyatlar</p>
+                </div>
+
+                <ul class="space-y-3 mb-6">
+                    <li class="flex items-center gap-3 p-3 bg-slate-800/50 rounded-xl">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Cheksiz kampaniyalar yaratish
+                    </li>
+                    <li class="flex items-center gap-3 p-3 bg-slate-800/50 rounded-xl">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Bosh sahifada namoyish
+                    </li>
+                    <li class="flex items-center gap-3 p-3 bg-slate-800/50 rounded-xl">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Batafsil statistika va hisobotlar
+                    </li>
+                    <li class="flex items-center gap-3 p-3 bg-slate-800/50 rounded-xl">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Premium belgi
+                    </li>
+                </ul>
+
+                <div class="bg-slate-800/50 rounded-xl p-4 mb-6">
+                    <p class="text-sm text-slate-400 mb-2">To'lov uchun bog'laning:</p>
+                    <p class="text-xl font-bold text-amber-400">+998 93 430 08 39</p>
+                </div>
+
+                <button class="btn btn-premium w-full" onclick="contactForPremium()">
+                    Bog'lanish
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Donate Modal -->
+    <div class="modal-overlay" id="donateModal">
+        <div class="modal">
+            <div class="p-6 border-b border-slate-700">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-bold">Xayriya qilish</h2>
+                    <button class="btn btn-ghost p-2" onclick="closeModal('donateModal')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <div class="input-group">
+                    <label class="input-label">Summa ($)</label>
+                    <input type="number" class="input text-2xl font-bold text-center" placeholder="100" min="1" id="donateAmount">
+                </div>
+                <div class="grid grid-cols-4 gap-2 mb-6">
+                    <button class="btn btn-outline" onclick="setDonateAmount(10)">$10</button>
+                    <button class="btn btn-outline" onclick="setDonateAmount(25)">$25</button>
+                    <button class="btn btn-outline" onclick="setDonateAmount(50)">$50</button>
+                    <button class="btn btn-outline" onclick="setDonateAmount(100)">$100</button>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">Izoh (ixtiyoriy)</label>
+                    <textarea class="input" placeholder="Xabaringiz..." id="donateMessage"></textarea>
+                </div>
+                <button class="btn btn-primary w-full" onclick="submitDonation()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                    Xayriya qilish
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal-overlay" id="editProfileModal">
+        <div class="modal">
+            <div class="p-6 border-b border-slate-700">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-bold">Profilni tahrirlash</h2>
+                    <button class="btn btn-ghost p-2" onclick="closeModal('editProfileModal')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <form id="editProfileForm">
+                    <div class="input-group">
+                        <label class="input-label">Ism</label>
+                        <input type="text" class="input" id="editName">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Telefon</label>
+                        <input type="tel" class="input" id="editPhone">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Sharh</label>
+                        <textarea class="input" id="editBio" placeholder="O'zingiz haqingizda..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-full">Saqlash</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // Data Store
+        let currentUser = null;
+        let currentCampaign = null;
+        let selectedCategory = 'all';
+
+        const campaigns = [
+            {
+                id: 1,
+                title: "Yangi maktab qurish",
+                description: "Qishloq bolalari uchun zamonaviy ta'lim maskani qurish. 500 dan ortiq bola foydalanadi.",
+                goal: 100000,
+                raised: 75000,
+                category: "education",
+                isPremium: true,
+                image: "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600&h=400&fit=crop",
+                deadline: "2025-02-15",
+                author: "Jahongir Karimov",
+                authorId: 2,
+                donors: 245,
+                daysLeft: 15,
+                comments: [
+                    { author: "Ali", text: "Zo'r loyiha!", date: "2025-01-20" },
+                    { author: "Vali", text: "Qo'llab-quvvatlayman!", date: "2025-01-21" }
+                ]
+            },
+            {
+                id: 2,
+                title: "Kasal bolalarga yordam",
+                description: "Saraton kasalligi bilan kurashayotgan bolalarga davolanish uchun moliyaviy yordam.",
+                goal: 50000,
+                raised: 32500,
+                category: "health",
+                isPremium: false,
+                image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&h=400&fit=crop",
+                deadline: "2025-02-28",
+                author: "Nilufar Ahmedova",
+                authorId: 3,
+                donors: 128,
+                daysLeft: 28,
+                comments: []
+            },
+            {
+                id: 3,
+                title: "Ekologik loyiha: Daraxt ekish",
+                description: "Shaharimizda 1000 ta daraxt ekish kampaniyasi. Sof havo - sog'lom kelajak!",
+                goal: 15000,
+                raised: 12000,
+                category: "environment",
+                isPremium: true,
+                image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=600&h=400&fit=crop",
+                deadline: "2025-03-01",
+                author: "Botir Toshmatov",
+                authorId: 4,
+                donors: 89,
+                daysLeft: 30,
+                comments: []
+            },
+            {
+                id: 4,
+                title: "Startap moliyalashtirish",
+                description: "Yangi texnologik startap - mobil ilova yaratish. Ish o'rinlari yaratamiz!",
+                goal: 80000,
+                raised: 45000,
+                category: "business",
+                isPremium: false,
+                image: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=600&h=400&fit=crop",
+                deadline: "2025-02-20",
+                author: "Sardor Rahimov",
+                authorId: 5,
+                donors: 156,
+                daysLeft: 12,
+                comments: []
+            },
+            {
+                id: 5,
+                title: "Kam ta'minlangan oilalarga yordam",
+                description: "Qishloqdagi kam ta'minlangan oilalarga oziq-ovqat va kiyim-kechak yordam.",
+                goal: 20000,
+                raised: 18500,
+                category: "social",
+                isPremium: false,
+                image: "https://images.unsplash.com/photo-1593113598332-cd288d649433?w=600&h=400&fit=crop",
+                deadline: "2025-02-10",
+                author: "Malika Nurmatova",
+                authorId: 6,
+                donors: 210,
+                daysLeft: 5,
+                comments: []
+            },
+            {
+                id: 6,
+                title: "Kutubxona ta'mirlash",
+                description: "Eski kutubxonani ta'mirlash va yangi kitoblar sotib olish.",
+                goal: 25000,
+                raised: 10000,
+                category: "education",
+                isPremium: false,
+                image: "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=600&h=400&fit=crop",
+                deadline: "2025-03-15",
+                author: "Dilshod Alimov",
+                authorId: 7,
+                donors: 67,
+                daysLeft: 45,
+                comments: []
+            }
+        ];
+
+        const users = [
+            { id: 1, name: "Admin", email: "admin@foundi.uz", phone: "+998934300839", isPremium: true, campaigns: 0, isVerified: true }
+        ];
+
+        // Category labels
+        const categoryLabels = {
+            education: "Ta'lim",
+            health: "Salomatlik",
+            social: "Ijtimoiy yordam",
+            business: "Biznes",
+            environment: "Atrof-muhit"
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            initScrollEffects();
+            initFormHandlers();
+            renderTrendingCampaigns();
+            renderCampaigns();
+            updateAuthUI();
+            setMinDeadline();
+        });
+
+        // Create floating particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            if (!container) return;
+            
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // Scroll effects
+        function initScrollEffects() {
+            const navbar = document.getElementById('navbar');
+            
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+
+            // Intersection Observer for reveals
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        // Animate numbers
+                        if (entry.target.querySelector('.stat-number')) {
+                            animateNumber(entry.target.querySelector('.stat-number'));
+                        }
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        }
+
+        // Animate numbers
+        function animateNumber(element) {
+            const target = parseInt(element.dataset.target) || 0;
+            const duration = 2000;
+            const start = performance.now();
+            
+            function update(currentTime) {
+                const elapsed = currentTime - start;
+                const progress = Math.min(elapsed / duration, 1);
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                const current = Math.floor(target * easeOut);
+                
+                if (target > 1000) {
+                    element.textContent = current.toLocaleString();
+                } else {
+                    element.textContent = current + (element.closest('.stat-card')?.querySelector('.stat-label')?.textContent.includes('%') ? '' : '');
+                }
+                
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            
+            requestAnimationFrame(update);
+        }
+
+        // Form handlers
+        function initFormHandlers() {
+            // Login form
+            document.getElementById('loginForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                
+                // Simulate login
+                const user = users.find(u => u.email === email);
+                if (user || email.includes('@')) {
+                    currentUser = user || {
+                        id: users.length + 1,
+                        name: email.split('@')[0],
+                        email: email,
+                        phone: '',
+                        isPremium: false,
+                        campaigns: 0,
+                        isVerified: false
+                    };
+                    closeModal('loginModal');
+                    updateAuthUI();
+                    showToast('Muvaffaqiyatli kirdingiz!', 'success');
+                } else {
+                    showToast('Email yoki parol noto\'g\'ri', 'error');
+                }
+            });
+
+            // Register form
+            document.getElementById('registerForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = document.getElementById('registerName').value;
+                const email = document.getElementById('registerEmail').value;
+                const phone = document.getElementById('registerPhone').value;
+                
+                currentUser = {
+                    id: users.length + 1,
+                    name: name,
+                    email: email,
+                    phone: phone,
+                    isPremium: false,
+                    campaigns: 0,
+                    isVerified: false
+                };
+                users.push(currentUser);
+                closeModal('registerModal');
+                updateAuthUI();
+                showToast('Muvaffaqiyatli ro\'yxatdan o\'tdingiz!', 'success');
+            });
+
+            // Create campaign form
+            document.getElementById('createCampaignForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                if (!currentUser) {
+                    openModal('loginModal');
+                    showToast('Avval tizimga kiring', 'error');
+                    return;
+                }
+
+                // Check if user has free campaigns left
+                const userCampaigns = campaigns.filter(c => c.authorId === currentUser.id);
+                if (userCampaigns.length >= 1 && !currentUser.isPremium) {
+                    openModal('premiumModal');
+                    showToast('Premium obuna kerak', 'error');
+                    return;
+                }
+
+                const newCampaign = {
+                    id: campaigns.length + 1,
+                    title: document.getElementById('campaignTitle').value,
+                    description: document.getElementById('campaignDescription').value,
+                    goal: parseInt(document.getElementById('campaignGoal').value),
+                    raised: 0,
+                    category: document.getElementById('campaignCategory').value,
+                    isPremium: currentUser.isPremium,
+                    image: "https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=600&h=400&fit=crop",
+                    deadline: document.getElementById('campaignDeadline').value,
+                    author: currentUser.name,
+                    authorId: currentUser.id,
+                    donors: 0,
+                    daysLeft: Math.ceil((new Date(document.getElementById('campaignDeadline').value) - new Date()) / (1000 * 60 * 60 * 24)),
+                    comments: []
+                };
+
+                campaigns.unshift(newCampaign);
+                renderCampaigns();
+                renderTrendingCampaigns();
+                navigateTo('campaigns');
+                showToast('Kampaniya muvaffaqiyatli yaratildi!', 'success');
+            });
+
+            // Edit profile form
+            document.getElementById('editProfileForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (currentUser) {
+                    currentUser.name = document.getElementById('editName').value;
+                    currentUser.phone = document.getElementById('editPhone').value;
+                    currentUser.bio = document.getElementById('editBio').value;
+                    closeModal('editProfileModal');
+                    updateAuthUI();
+                    showToast('Profil yangilandi!', 'success');
+                }
+            });
+
+            // File upload
+            const fileUpload = document.getElementById('fileUpload');
+            const fileInput = document.getElementById('fileInput');
+
+            fileUpload.addEventListener('click', () => fileInput.click());
+            fileUpload.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                fileUpload.classList.add('dragover');
+            });
+            fileUpload.addEventListener('dragleave', () => {
+                fileUpload.classList.remove('dragover');
+            });
+            fileUpload.addEventListener('drop', (e) => {
+                e.preventDefault();
+                fileUpload.classList.remove('dragover');
+                const file = e.dataTransfer.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    handleImageUpload(file);
+                }
+            });
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files[0]) {
+                    handleImageUpload(e.target.files[0]);
+                }
+            });
+        }
+
+        function handleImageUpload(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('imagePreview').classList.remove('hidden');
+                document.getElementById('imagePreview').querySelector('img').src = e.target.result;
+                document.getElementById('fileUpload').classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeImage() {
+            document.getElementById('imagePreview').classList.add('hidden');
+            document.getElementById('fileUpload').classList.remove('hidden');
+            document.getElementById('fileInput').value = '';
+        }
+
+        // Navigation
+        function navigateTo(page) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+            
+            const section = document.getElementById(page + 'Section');
+            if (section) {
+                section.classList.add('active');
+            }
+            
+            const navLink = document.querySelector(`[data-page="${page}"]`);
+            if (navLink) {
+                navLink.classList.add('active');
+            }
+
+            // Update specific page content
+            if (page === 'dashboard') {
+                updateDashboard();
+            } else if (page === 'profile') {
+                updateProfile();
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Render campaigns
+        function renderCampaigns() {
+            const grid = document.getElementById('campaignsGrid');
+            if (!grid) return;
+
+            let filteredCampaigns = [...campaigns];
+            
+            // Apply category filter
+            if (selectedCategory !== 'all') {
+                filteredCampaigns = filteredCampaigns.filter(c => c.category === selectedCategory);
+            }
+            
+            // Apply search filter
+            const searchQuery = document.getElementById('searchInput')?.value.toLowerCase() || '';
+            if (searchQuery) {
+                filteredCampaigns = filteredCampaigns.filter(c => 
+                    c.title.toLowerCase().includes(searchQuery) || 
+                    c.description.toLowerCase().includes(searchQuery)
+                );
+            }
+            
+            // Apply sort
+            const sortBy = document.getElementById('sortSelect')?.value || 'trending';
+            switch (sortBy) {
+                case 'newest':
+                    filteredCampaigns.sort((a, b) => b.id - a.id);
+                    break;
+                case 'funded':
+                    filteredCampaigns.sort((a, b) => b.raised - a.raised);
+                    break;
+                case 'ending':
+                    filteredCampaigns.sort((a, b) => a.daysLeft - b.daysLeft);
+                    break;
+                default:
+                    filteredCampaigns.sort((a, b) => b.donors - a.donors);
+            }
+
+            grid.innerHTML = filteredCampaigns.map(campaign => `
+                <div class="campaign-card ${campaign.isPremium ? 'premium' : ''}" onclick="openCampaignDetail(${campaign.id})">
+                    <div class="relative">
+                        <img src="${campaign.image}" alt="${campaign.title}" class="campaign-image">
+                        ${campaign.isPremium ? '<span class="premium-badge absolute top-3 right-3">Premium</span>' : ''}
+                    </div>
+                    <div class="campaign-content">
+                        <span class="category-tag mb-3">${categoryLabels[campaign.category]}</span>
+                        <h3 class="campaign-title">${campaign.title}</h3>
+                        <p class="campaign-description">${campaign.description}</p>
+                        <div class="progress-container mt-4 mb-2">
+                            <div class="progress-bar ${campaign.isPremium ? 'progress-premium' : ''}" style="width: ${Math.min((campaign.raised / campaign.goal) * 100, 100)}%"></div>
+                        </div>
+                        <div class="campaign-meta">
+                            <span class="campaign-amount ${campaign.isPremium ? 'premium' : ''}">$${campaign.raised.toLocaleString()} / $${campaign.goal.toLocaleString()}</span>
+                            <span class="campaign-days">${campaign.daysLeft} kun qoldi</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderTrendingCampaigns() {
+            const container = document.getElementById('trendingCampaigns');
+            if (!container) return;
+
+            const trending = [...campaigns]
+                .sort((a, b) => (b.raised / b.goal) - (a.raised / a.goal))
+                .slice(0, 3);
+
+            container.innerHTML = trending.map(campaign => `
+                <div class="campaign-card ${campaign.isPremium ? 'premium' : ''} reveal" onclick="openCampaignDetail(${campaign.id})">
+                    <div class="relative">
+                        <img src="${campaign.image}" alt="${campaign.title}" class="campaign-image">
+                        ${campaign.isPremium ? '<span class="premium-badge absolute top-3 right-3">Premium</span>' : ''}
+                    </div>
+                    <div class="campaign-content">
+                        <span class="category-tag mb-3">${categoryLabels[campaign.category]}</span>
+                        <h3 class="campaign-title">${campaign.title}</h3>
+                        <p class="campaign-description">${campaign.description}</p>
+                        <div class="progress-container mt-4 mb-2">
+                            <div class="progress-bar ${campaign.isPremium ? 'progress-premium' : ''}" style="width: ${Math.min((campaign.raised / campaign.goal) * 100, 100)}%"></div>
+                        </div>
+                        <div class="campaign-meta">
+                            <span class="campaign-amount ${campaign.isPremium ? 'premium' : ''}">$${campaign.raised.toLocaleString()} / $${campaign.goal.toLocaleString()}</span>
+                            <span class="campaign-days">${campaign.daysLeft} kun qoldi</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Filter functions
+        function filterCampaigns() {
+            renderCampaigns();
+        }
+
+        function filterByCategory(category) {
+            selectedCategory = category;
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.category === category);
+            });
+            renderCampaigns();
+        }
+
+        // Open campaign detail
+        function openCampaignDetail(id) {
+            const campaign = campaigns.find(c => c.id === id);
+            if (!campaign) return;
+
+            currentCampaign = campaign;
+            
+            const detail = document.getElementById('campaignDetail');
+            detail.innerHTML = `
+                <button class="btn btn-ghost mb-6" onclick="navigateTo('campaigns')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    Orqaga
+                </button>
+                
+                <div class="card overflow-hidden">
+                    <img src="${campaign.image}" alt="${campaign.title}" class="w-full h-64 md:h-96 object-cover">
+                    <div class="p-6 md:p-8">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="category-tag">${categoryLabels[campaign.category]}</span>
+                            ${campaign.isPremium ? '<span class="premium-badge">Premium</span>' : ''}
+                        </div>
+                        
+                        <h1 class="text-3xl md:text-4xl font-bold mb-4">${campaign.title}</h1>
+                        
+                        <div class="flex items-center gap-4 mb-6 text-slate-400">
+                            <span>${campaign.author}</span>
+                            <span>${campaign.donors} xayriyachi</span>
+                        </div>
+                        
+                        <p class="text-lg text-slate-300 mb-8 leading-relaxed">${campaign.description}</p>
+                        
+                        <div class="bg-slate-800/50 rounded-2xl p-6 mb-8">
+                            <div class="flex justify-between mb-4">
+                                <div>
+                                    <p class="text-3xl font-bold ${campaign.isPremium ? 'text-amber-400' : 'text-emerald-400'}">$${campaign.raised.toLocaleString()}</p>
+                                    <p class="text-slate-400">$${campaign.goal.toLocaleString()} maqsadidan</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-3xl font-bold">${Math.round((campaign.raised / campaign.goal) * 100)}%</p>
+                                    <p class="text-slate-400">${campaign.daysLeft} kun qoldi</p>
+                                </div>
+                            </div>
+                            <div class="progress-container h-4">
+                                <div class="progress-bar ${campaign.isPremium ? 'progress-premium' : ''}" style="width: ${Math.min((campaign.raised / campaign.goal) * 100, 100)}%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-col sm:flex-row gap-4 mb-8">
+                            <button class="btn btn-primary flex-1" onclick="openModal('donateModal')">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                                Xayriya qilish
+                            </button>
+                            <div class="share-buttons">
+                                <button class="share-btn telegram" onclick="shareCampaign('telegram')">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                                    </svg>
+                                    Telegram
+                                </button>
+                                <button class="share-btn instagram" onclick="shareCampaign('instagram')">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                                    </svg>
+                                    Instagram
+                                </button>
+                                <button class="share-btn facebook" onclick="shareCampaign('facebook')">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                                    </svg>
+                                    Facebook
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Comments -->
+                        <div class="border-t border-slate-700 pt-8">
+                            <h3 class="text-xl font-bold mb-6">Fikrlar (${campaign.comments.length})</h3>
+                            
+                            <div class="mb-6">
+                                <textarea class="input" placeholder="Fikringizni yozing..." id="commentInput"></textarea>
+                                <button class="btn btn-primary mt-3" onclick="addComment()">Yuborish</button>
+                            </div>
+                            
+                            <div id="commentsList">
+                                ${campaign.comments.length > 0 ? campaign.comments.map(comment => `
+                                    <div class="comment">
+                                        <div class="comment-header">
+                                            <div class="comment-avatar">${comment.author.charAt(0)}</div>
+                                            <div>
+                                                <p class="comment-author">${comment.author}</p>
+                                                <p class="comment-date">${comment.date}</p>
+                                            </div>
+                                        </div>
+                                        <p class="comment-text">${comment.text}</p>
+                                    </div>
+                                `).join('') : '<p class="text-slate-400 text-center py-8">Hali fikrlar yo\'q</p>'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById('campaignDetailSection').classList.add('active');
+        }
+
+        // Share campaign
+        function shareCampaign(platform) {
+            const url = window.location.href;
+            const text = currentCampaign ? currentCampaign.title : '';
+            
+            let shareUrl = '';
+            switch (platform) {
+                case 'telegram':
+                    shareUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+                    break;
+                case 'facebook':
+                    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+                    break;
+                case 'instagram':
+                    showToast('Instagram da ulashish uchun link nusxalandi', 'success');
+                    navigator.clipboard.writeText(url);
+                    return;
+            }
+            
+            window.open(shareUrl, '_blank', 'width=600,height=400');
+        }
+
+        // Add comment
+        function addComment() {
+            if (!currentCampaign) return;
+            
+            const input = document.getElementById('commentInput');
+            const text = input.value.trim();
+            
+            if (!text) {
+                showToast('Fikr yozing', 'error');
+                return;
+            }
+            
+            if (!currentUser) {
+                openModal('loginModal');
+                return;
+            }
+            
+            currentCampaign.comments.unshift({
+                author: currentUser.name,
+                text: text,
+                date: new Date().toISOString().split('T')[0]
+            });
+            
+            input.value = '';
+            openCampaignDetail(currentCampaign.id);
+            showToast('Fikr qo\'shildi!', 'success');
+        }
+
+        // Donation
+        function setDonateAmount(amount) {
+            document.getElementById('donateAmount').value = amount;
+        }
+
+        function submitDonation() {
+            if (!currentUser) {
+                closeModal('donateModal');
+                openModal('loginModal');
+                showToast('Avval tizimga kiring', 'error');
+                return;
+            }
+            
+            const amount = parseInt(document.getElementById('donateAmount').value);
+            
+            if (!amount || amount < 1) {
+                showToast('Summa kiriting', 'error');
+                return;
+            }
+            
+            if (currentCampaign) {
+                currentCampaign.raised += amount;
+                currentCampaign.donors++;
+                closeModal('donateModal');
+                openCampaignDetail(currentCampaign.id);
+                showToast(`$${amount} xayriya qildingiz! Rahmat!`, 'success');
+            }
+        }
+
+        // Update dashboard
+        function updateDashboard() {
+            if (!currentUser) {
+                navigateTo('home');
+                openModal('loginModal');
+                return;
+            }
+            
+            const userCampaigns = campaigns.filter(c => c.authorId === currentUser.id);
+            const totalRaised = userCampaigns.reduce((sum, c) => sum + c.raised, 0);
+            const totalDonors = userCampaigns.reduce((sum, c) => sum + c.donors, 0);
+            
+            document.getElementById('dashTotalRaised').textContent = '$' + totalRaised.toLocaleString();
+            document.getElementById('dashActiveCampaigns').textContent = userCampaigns.length;
+            document.getElementById('dashTotalDonors').textContent = totalDonors;
+            document.getElementById('dashSuccessRate').textContent = userCampaigns.length > 0 ? Math.round((userCampaigns.filter(c => c.raised >= c.goal).length / userCampaigns.length) * 100) + '%' : '0%';
+            
+            const myCampaignsList = document.getElementById('myCampaignsList');
+            const noCampaignsMessage = document.getElementById('noCampaignsMessage');
+            
+            if (userCampaigns.length === 0) {
+                myCampaignsList.innerHTML = '';
+                noCampaignsMessage.classList.remove('hidden');
+            } else {
+                noCampaignsMessage.classList.add('hidden');
+                myCampaignsList.innerHTML = userCampaigns.map(campaign => `
+                    <div class="flex flex-col sm:flex-row gap-4 p-4 bg-slate-800/50 rounded-xl mb-4 hover:bg-slate-800 transition-colors cursor-pointer" onclick="openCampaignDetail(${campaign.id})">
+                        <img src="${campaign.image}" alt="${campaign.title}" class="w-full sm:w-32 h-24 object-cover rounded-lg">
+                        <div class="flex-1">
+                            <h3 class="font-bold mb-1">${campaign.title}</h3>
+                            <div class="progress-container h-2 mb-2">
+                                <div class="progress-bar" style="width: ${Math.min((campaign.raised / campaign.goal) * 100, 100)}%"></div>
+                            </div>
+                            <div class="flex justify-between text-sm text-slate-400">
+                                <span>$${campaign.raised.toLocaleString()} / $${campaign.goal.toLocaleString()}</span>
+                                <span>${campaign.daysLeft} kun</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Update profile
+        function updateProfile() {
+            if (!currentUser) {
+                navigateTo('home');
+                openModal('loginModal');
+                return;
+            }
+            
+            document.getElementById('profileAvatar').textContent = currentUser.name.charAt(0).toUpperCase();
+            document.getElementById('profileName').textContent = currentUser.name;
+            document.getElementById('profileEmail').textContent = currentUser.email;
+            
+            if (currentUser.isPremium) {
+                document.getElementById('profilePremiumBadge').classList.remove('hidden');
+            }
+            
+            if (currentUser.isVerified) {
+                document.getElementById('profileVerified').style.display = 'inline-flex';
+            } else {
+                document.getElementById('profileVerified').style.display = 'none';
+            }
+            
+            // Populate edit form
+            document.getElementById('editName').value = currentUser.name;
+            document.getElementById('editPhone').value = currentUser.phone || '';
+            document.getElementById('editBio').value = currentUser.bio || '';
+            
+            switchProfileTab('campaigns');
+        }
+
+        function switchProfileTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.tab[onclick="switchProfileTab('${tab}')"]`)?.classList.add('active');
+            
+            const content = document.getElementById('profileContent');
+            const userCampaigns = campaigns.filter(c => c.authorId === currentUser?.id);
+            
+            if (tab === 'campaigns') {
+                content.innerHTML = userCampaigns.length > 0 ? userCampaigns.map(campaign => `
+                    <div class="card p-4 mb-4 cursor-pointer" onclick="openCampaignDetail(${campaign.id})">
+                        <h3 class="font-bold mb-2">${campaign.title}</h3>
+                        <div class="progress-container h-2 mb-2">
+                            <div class="progress-bar" style="width: ${Math.min((campaign.raised / campaign.goal) * 100, 100)}%"></div>
+                        </div>
+                        <p class="text-sm text-slate-400">$${campaign.raised.toLocaleString()} / $${campaign.goal.toLocaleString()}</p>
+                    </div>
+                `).join('') : '<p class="text-slate-400 text-center py-8">Kampaniyalar yo\'q</p>';
+            } else if (tab === 'donations') {
+                content.innerHTML = '<p class="text-slate-400 text-center py-8">Xayriyalar tarixi bo\'sh</p>';
+            } else {
+                content.innerHTML = `
+                    <div class="card p-6">
+                        <h3 class="font-bold mb-4">Sozlamalar</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center py-3 border-b border-slate-700">
+                                <span>Email</span>
+                                <span class="text-slate-400">${currentUser.email}</span>
+                            </div>
+                            <div class="flex justify-between items-center py-3 border-b border-slate-700">
+                                <span>Telefon</span>
+                                <span class="text-slate-400">${currentUser.phone || 'Kiritilmagan'}</span>
+                            </div>
+                            <div class="flex justify-between items-center py-3 border-b border-slate-700">
+                                <span>Hisob turi</span>
+                                <span class="${currentUser.isPremium ? 'text-amber-400' : 'text-slate-400'}">${currentUser.isPremium ? 'Premium' : 'Bepul'}</span>
+                            </div>
+                            <button class="btn btn-outline w-full mt-4" onclick="openModal('premiumModal')">
+                                ${currentUser.isPremium ? 'Premium ni boshqarish' : 'Premium ga o\'tish'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Auth UI
+        function updateAuthUI() {
+            const loginBtn = document.getElementById('loginBtn');
+            const registerBtn = document.getElementById('registerBtn');
+            const userProfile = document.getElementById('userProfile');
+            const userAvatar = document.getElementById('userAvatar');
+            const userName = document.getElementById('userName');
+            
+            if (currentUser) {
+                loginBtn.classList.add('hidden');
+                registerBtn.classList.add('hidden');
+                userProfile.classList.remove('hidden');
+                userProfile.classList.add('flex');
+                userAvatar.textContent = currentUser.name.charAt(0).toUpperCase();
+                userName.textContent = currentUser.name;
+            } else {
+                loginBtn.classList.remove('hidden');
+                registerBtn.classList.remove('hidden');
+                userProfile.classList.add('hidden');
+                userProfile.classList.remove('flex');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            updateAuthUI();
+            navigateTo('home');
+            showToast('Tizimdan chiqdingiz', 'success');
+        }
+
+        // Modal functions
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function switchModal(from, to) {
+            closeModal(from);
+            setTimeout(() => openModal(to), 200);
+        }
+
+        // Contact for premium
+        function contactForPremium() {
+            const phone = '998934300839';
+            const message = 'Salom! Premium obuna haqida ma\'lumot olmoqchiman.';
+            window.open(`https://t.me/+${phone}?text=${encodeURIComponent(message)}`, '_blank');
+            closeModal('premiumModal');
+            showToast('Telegram ochildi', 'success');
+        }
+
+        // Set minimum deadline
+        function setMinDeadline() {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const minDate = tomorrow.toISOString().split('T')[0];
+            document.getElementById('campaignDeadline').min = minDate;
+        }
+
+        // Mobile menu
+        function toggleMobileMenu() {
+            document.getElementById('navLinks').classList.toggle('open');
+        }
+
+        // Notifications
+        function toggleNotifications() {
+            showToast('Bildirishnomalar tez orada!', 'success');
+        }
+
+        // Toast notifications
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${type === 'success' ? '#22c55e' : '#ef4444'}" stroke-width="2">
+                    ${type === 'success' 
+                        ? '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>'
+                        : '<circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line>'
+                    }
+                </svg>
+                <span>${message}</span>
+            `;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Close modals on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.active').forEach(modal => {
+                    modal.classList.remove('active');
+                });
+                document.body.style.overflow = '';
+            }
+        });
+    </script>
+</body>
+</html>
